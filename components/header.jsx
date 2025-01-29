@@ -41,7 +41,7 @@ const Header = async () => {
                 className='hidden md:inline-flex items-center gap-2'
               >
                 <LayoutDashboard className='h-4 w-4' />
-                Industry Insights
+                Dashboard
               </Button>
               <Button variant='ghost' className='md:hidden w-10 h-10 p-0'>
                 <LayoutDashboard className='h-4 w-4' />

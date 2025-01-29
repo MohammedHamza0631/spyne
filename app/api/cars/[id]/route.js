@@ -22,21 +22,35 @@ export async function GET(req, { params }) {
 
 // UPDATE a car
 export async function PUT(req, { params }) {
+  const carParams = await params;
   try {
-    const { userId } = await auth();
-    if (!userId)
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const car = await db.car.findUnique({ where: { id: params.id } });
-    if (!car || car.userId !== userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    // Get the database user
+    const user = await db.user.findUnique({
+      where: { clerkUserId }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 403 });
+    }
+
+    // Find the car
+    const car = await db.car.findUnique({ 
+      where: { id: carParams.id } 
+    });
+
+    if (!car || car.userId !== user.id) {
+      return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
     }
 
     const { title, description, images, carType, company, dealer, tags } =
       await req.json();
 
     const updatedCar = await db.car.update({
-      where: { id: params.id },
+      where: { id: carParams.id },
       data: { title, description, images, carType, company, dealer, tags },
     });
 
@@ -51,22 +65,41 @@ export async function PUT(req, { params }) {
 
 // DELETE a car
 export async function DELETE(req, { params }) {
+  const carParams = await params;
   try {
-    const { userId } = await auth();
-    if (!userId)
+    // Get clerk user ID
+    const { userId: clerkUserId } = await auth();
+    if (!clerkUserId)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const car = await db.car.findUnique({ where: { id: params.id } });
-    if (!car || car.userId !== userId) {
+    // Get the database user
+    const user = await db.user.findUnique({
+      where: { clerkUserId }
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 403 });
+    }
+
+    // Find the car
+    const car = await db.car.findUnique({ 
+      where: { id: carParams.id }
+    });
+
+    // Check if car exists and belongs to user
+    if (!car || car.userId !== user.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    await db.car.delete({ where: { id: params.id } });
+    // Delete the car
+    await db.car.delete({ 
+      where: { id: carParams.id }
+    });
 
     return NextResponse.json({ message: "Car deleted" }, { status: 200 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to delete car" },
+      { error: error.message || "Failed to delete car" },
       { status: 500 }
     );
   }

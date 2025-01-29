@@ -5,6 +5,15 @@ import { NextResponse } from "next/server";
 // GET all cars (with global search)
 export async function GET(req) {
   try {
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    let user = await db.user.findUnique({ where: { clerkUserId: userId } });
+    if (!user) {
+      return NextResponse.json({ error: 'User not found. Please re-login.' }, { status: 403 });
+    }
+
+    
     const url = new URL(req.url);
     const search = url.searchParams.get("q"); // Search keyword
 
@@ -41,9 +50,21 @@ export async function GET(req) {
 export async function POST(req) {
   try {
     const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!userId)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { title, description, images, carType, company, dealer, tags } = await req.json();
+    // Ensure user exists in Prisma DB
+    let user = await db.user.findUnique({ where: { clerkUserId: userId } });
+
+    // If user doesn't exist, create it
+    if (!user) {
+      return NextResponse.json(
+        { error: "User does not exist in DB. Please relogin." },
+        { status: 403 }
+      );
+    }
+    const { title, description, images, carType, company, dealer, tags } =
+      await req.json();
 
     const newCar = await db.car.create({
       data: {
@@ -54,14 +75,14 @@ export async function POST(req) {
         company,
         dealer,
         tags,
-        userId,
+        userId: user.id,
       },
     });
 
     return NextResponse.json(newCar, { status: 201 });
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to create car" },
+      { error: error.message || "Failed to create car" },
       { status: 500 }
     );
   }
