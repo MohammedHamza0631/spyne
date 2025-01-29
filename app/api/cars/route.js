@@ -2,25 +2,31 @@ import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
-// ✅ GET all cars (Global Search)
+// GET all cars (with global search)
 export async function GET(req) {
-  const { searchParams } = new URL(req.url);
-  const query = searchParams.get("query");
-
   try {
-    const cars = await db.car.findMany({
-      where: query
-        ? {
-            OR: [
-              { title: { contains: query, mode: "insensitive" } },
-              { description: { contains: query, mode: "insensitive" } },
-              { tags: { has: query } },
-            ],
-          }
-        : {},
-      include: { user: true },
-      orderBy: { createdAt: "desc" },
-    });
+    const url = new URL(req.url);
+    const search = url.searchParams.get("q"); // Search keyword
+
+    let cars;
+    if (search) {
+      cars = await db.car.findMany({
+        where: {
+          OR: [
+            { title: { contains: search, mode: "insensitive" } },
+            { description: { contains: search, mode: "insensitive" } },
+            { tags: { hasSome: [search] } },
+          ],
+        },
+        include: { user: true },
+        orderBy: { createdAt: "desc" },
+      });
+    } else {
+      cars = await db.car.findMany({
+        include: { user: true },
+        orderBy: { createdAt: "desc" },
+      });
+    }
 
     return NextResponse.json(cars, { status: 200 });
   } catch (error) {
@@ -31,29 +37,19 @@ export async function GET(req) {
   }
 }
 
-// ✅ POST - Create a new car
+// POST - Create a new car
 export async function POST(req) {
-  const { userId } = await auth();
-
-  if (!userId)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
   try {
-    const { title, description, images, carType, company, dealer, tags } =
-      await req.json();
+    const { userId } = await auth();
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    if (!title || !description || !images.length) {
-      return NextResponse.json(
-        { error: "Missing required fields" },
-        { status: 400 }
-      );
-    }
+    const { title, description, images, carType, company, dealer, tags } = await req.json();
 
     const newCar = await db.car.create({
       data: {
         title,
         description,
-        images,
+        images: images.slice(0, 10), // Ensure max 10 images
         carType,
         company,
         dealer,
