@@ -4,7 +4,7 @@ import React from 'react'
 const Page = () => {
   return (
     <div>
-      <SignUp />
+      <SignUp forceRedirectUrl='/dashboard' />
     </div>
   )
 }
