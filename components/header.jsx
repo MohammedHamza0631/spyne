@@ -35,6 +35,15 @@ const Header = async () => {
         </Link>
         <div className='flex items-center space-x-2 md:space-x-4'>
           <SignedIn>
+            <Link href='/api/docs'>
+              <Button
+                variant='outline'
+                className='hidden md:inline-flex items-center gap-2'
+              >
+                <FileText className='h-4 w-4' />
+                API Docs
+              </Button>
+            </Link>
             <Link href='/dashboard'>
               <Button
                 variant='outline'
@@ -57,6 +66,15 @@ const Header = async () => {
           </SignedIn>
 
           <SignedOut>
+            <Link href='/api/docs'>
+              <Button
+                variant='outline'
+                className='hidden md:inline-flex items-center gap-2'
+              >
+                <FileText className='h-4 w-4' />
+                API Docs
+              </Button>
+            </Link>
             <SignInButton>
               <Button variant='outline'>Sign In</Button>
             </SignInButton>
