@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { PlusCircle, Search } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import {
   Card,
   CardContent,
@@ -102,8 +103,10 @@ export default function DashboardPage () {
   const [cars, setCars] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
   let title = 'All Cars'
-  if (window.location.pathname === '/dashboard') {
+  // get a path from router and check if it is dashboard
+  if (router.pathname === '/dashboard') {
     title = 'Your Cars'
   }
 
