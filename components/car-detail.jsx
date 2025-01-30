@@ -22,7 +22,11 @@ function CarDetail ({ initialCar }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [car, setCar] = useState(initialCar)
-  const {isSignedIn} = useAuth()
+
+  //console.log(car)
+  const { isSignedIn, userId } = useAuth()
+  const isOwner = isSignedIn && car.user.clerkUserId === userId
+
   const handleDelete = async () => {
     setLoading(true)
     try {
@@ -72,7 +76,7 @@ function CarDetail ({ initialCar }) {
               </p>
             </div>
 
-            {car.isOwner && isSignedIn && (
+            {isOwner && isSignedIn && (
               <div className='flex gap-2'>
                 <Button variant='outline' asChild>
                   <Link href={`/cars/${car.id}/edit`}>
