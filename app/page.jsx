@@ -1,12 +1,11 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
+import DashboardPage from "./dashboard/page";
 
 export default function Home() {
   return (
     <div>
-      Welcome to Cars App
-      <br />
-      <Button>Click me</Button>
+      <DashboardPage/>
     </div>
   );
 }

@@ -102,6 +102,10 @@ export default function DashboardPage () {
   const [cars, setCars] = useState([])
   const [searchQuery, setSearchQuery] = useState('')
   const [loading, setLoading] = useState(true)
+  let title = 'All Cars'
+  if (window.location.pathname === '/dashboard') {
+    title = 'Your Cars'
+  }
 
   // ✅ Fetch cars from backend API
   const fetchCars = useCallback(
@@ -129,7 +133,8 @@ export default function DashboardPage () {
   return (
     <div className='container mx-auto px-4 py-8'>
       <div className='flex flex-col md:flex-row justify-between items-center gap-4 mb-8'>
-        <h1 className='text-3xl font-bold'>Your Cars</h1>
+        {/* if the path is dashboard then title is Your Cars else All Cars */}
+        <h1 className='text-3xl font-bold'>{`${title}`}</h1>
         <div className='flex items-center gap-4 w-full md:w-auto'>
           <SearchForm
             searchQuery={searchQuery}

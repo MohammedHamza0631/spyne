@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Pencil, Trash2, Loader2 } from 'lucide-react'
+import {useAuth} from '@clerk/nextjs'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,7 +22,7 @@ function CarDetail ({ initialCar }) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [car, setCar] = useState(initialCar)
-
+  const {isSignedIn} = useAuth()
   const handleDelete = async () => {
     setLoading(true)
     try {
@@ -71,7 +72,7 @@ function CarDetail ({ initialCar }) {
               </p>
             </div>
 
-            {car.isOwner && (
+            {car.isOwner && isSignedIn && (
               <div className='flex gap-2'>
                 <Button variant='outline' asChild>
                   <Link href={`/cars/${car.id}/edit`}>

@@ -5,15 +5,6 @@ import { NextResponse } from "next/server";
 // GET all cars (with global search)
 export async function GET(req) {
   try {
-    const { userId } = await auth();
-    if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    let user = await db.user.findUnique({ where: { clerkUserId: userId } });
-    if (!user) {
-      return NextResponse.json({ error: 'User not found. Please re-login.' }, { status: 403 });
-    }
-
-    
     const url = new URL(req.url);
     const search = url.searchParams.get("q"); // Search keyword
 
