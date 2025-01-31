@@ -263,8 +263,7 @@ const APIDocumentation = () => {
           <p className='text-gray-600 dark:text-gray-300 mb-4'>
             This API enables management of car listings with authentication
             using Clerk. All endpoints require authentication except{' '}
-            <span className='px-2 py-1 rounded text-white font-mono text-sm bg-blue-600'>GET</span> routes for all cars and
-            single car details. otherwise.
+            <span className='px-2 py-1 rounded text-white font-mono text-sm bg-blue-600'>GET</span> routes for all cars and single car details.
           </p>
 
           <h3 className='font-semibold mb-2 dark:text-white'>Authentication</h3>

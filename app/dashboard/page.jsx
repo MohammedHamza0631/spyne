@@ -105,12 +105,10 @@ export default function DashboardPage () {
   const [loading, setLoading] = useState(true)
   const router = useRouter()
   let title = 'All Cars'
-  // get a path from router and check if it is dashboard
   if (router.pathname === '/dashboard') {
     title = 'Your Cars'
   }
 
-  // ✅ Fetch cars from backend API
   const fetchCars = useCallback(
     debounce(async query => {
       setLoading(true)
@@ -125,7 +123,7 @@ export default function DashboardPage () {
       } finally {
         setLoading(false)
       }
-    }, 900), // ✅ Debounce delay of 500ms
+    }, 900), 
     []
   )
 
@@ -136,7 +134,6 @@ export default function DashboardPage () {
   return (
     <div className='container mx-auto px-4 py-8'>
       <div className='flex flex-col md:flex-row justify-between items-center gap-4 mb-8'>
-        {/* if the path is dashboard then title is Your Cars else All Cars */}
         <h1 className='text-3xl font-bold'>{`${title}`}</h1>
         <div className='flex items-center gap-4 w-full md:w-auto'>
           <SearchForm
